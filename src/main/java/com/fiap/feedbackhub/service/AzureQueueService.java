@@ -3,7 +3,8 @@ package com.fiap.feedbackhub.service;
 import com.azure.storage.queue.QueueClient;
 import com.azure.storage.queue.QueueClientBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -14,8 +15,9 @@ import java.util.Base64;
  * Business layer do padrão MVC
  */
 @Service
-@Slf4j
 public class AzureQueueService {
+
+    private static final Logger log = LoggerFactory.getLogger(AzureQueueService.class);
 
     private final QueueClient queueClient;
     private final ObjectMapper objectMapper;
@@ -34,9 +36,11 @@ public class AzureQueueService {
                     .buildClient();
 
             // Cria a fila se não existir
-            if (!queueClient.exists()) {
-                queueClient.create();
-                log.info("Fila '{}' criada com sucesso", queueName);
+            try {
+                queueClient.createIfNotExists();
+                log.info("Fila '{}' verificada/criada com sucesso", queueName);
+            } catch (Exception ex) {
+                log.warn("Fila '{}' já existe ou erro ao criar: {}", queueName, ex.getMessage());
             }
         } catch (Exception e) {
             log.error("Erro ao inicializar Azure Queue: {}", e.getMessage());

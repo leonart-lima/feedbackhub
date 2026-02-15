@@ -4,7 +4,8 @@ import com.fiap.feedbackhub.service.RelatorioService;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.TimerTrigger;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,8 +14,9 @@ import org.springframework.stereotype.Component;
  * Terceira função serverless - Responsabilidade: Gerar e enviar relatórios semanais automaticamente
  */
 @Component
-@Slf4j
 public class RelatorioSemanalFunction {
+
+    private static final Logger log = LoggerFactory.getLogger(RelatorioSemanalFunction.class);
 
     @Autowired
     private RelatorioService relatorioService;

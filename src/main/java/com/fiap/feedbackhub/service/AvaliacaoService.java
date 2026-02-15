@@ -6,8 +6,8 @@ import com.fiap.feedbackhub.enums.Urgencia;
 import com.fiap.feedbackhub.model.Avaliacao;
 import com.fiap.feedbackhub.repository.AvaliacaoRepository;
 import com.fiap.feedbackhub.util.UrgenciaClassificador;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,13 +21,21 @@ import java.util.Map;
  * Business layer do padrão MVC
  */
 @Service
-@Slf4j
-@RequiredArgsConstructor
 public class AvaliacaoService {
+
+    private static final Logger log = LoggerFactory.getLogger(AvaliacaoService.class);
 
     private final AvaliacaoRepository avaliacaoRepository;
     private final UrgenciaClassificador urgenciaClassificador;
     private final AzureQueueService azureQueueService;
+
+    public AvaliacaoService(AvaliacaoRepository avaliacaoRepository,
+                           UrgenciaClassificador urgenciaClassificador,
+                           AzureQueueService azureQueueService) {
+        this.avaliacaoRepository = avaliacaoRepository;
+        this.urgenciaClassificador = urgenciaClassificador;
+        this.azureQueueService = azureQueueService;
+    }
 
     /**
      * Processa e salva uma nova avaliação

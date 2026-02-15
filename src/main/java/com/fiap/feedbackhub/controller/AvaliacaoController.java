@@ -4,8 +4,8 @@ import com.fiap.feedbackhub.dto.AvaliacaoRequestDTO;
 import com.fiap.feedbackhub.dto.AvaliacaoResponseDTO;
 import com.fiap.feedbackhub.service.AvaliacaoService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,11 +16,14 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/api")
-@Slf4j
-@RequiredArgsConstructor
 public class AvaliacaoController {
 
+    private static final Logger log = LoggerFactory.getLogger(AvaliacaoController.class);
     private final AvaliacaoService avaliacaoService;
+
+    public AvaliacaoController(AvaliacaoService avaliacaoService) {
+        this.avaliacaoService = avaliacaoService;
+    }
 
     /**
      * Endpoint para receber nova avaliação

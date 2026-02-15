@@ -130,7 +130,7 @@ src/main/java/com/fiap/feedbackhub/
 
 ### Pré-requisitos
 
-- **Java 17** ou superior
+- **Java 21** ou superior
 - **Maven 3.8+**
 - **Azure CLI** instalado e configurado
 - **Conta Azure** com créditos disponíveis
@@ -193,9 +193,9 @@ az functionapp create \
   --resource-group feedbackhub-rg \
   --consumption-plan-location eastus \
   --runtime java \
-  --runtime-version 17 \
+  --runtime-version 21 \
   --functions-version 4 \
-  --name feedbackhub-functions \
+  --name feedbackhub-functions-$(date +%s | tail -c 6) \
   --storage-account feedbackhubstorage \
   --os-type Linux
 ```
@@ -241,8 +241,56 @@ az functionapp config appsettings set \
 # Build do projeto
 mvn clean package
 
+# Se tiver problemas de compilação, use o script alternativo
+chmod +x build.sh
+./build.sh
+
 # Deploy para Azure
 mvn azure-functions:deploy
+```
+
+#### Troubleshooting Build
+
+**Erro: `java.lang.ExceptionInInitializerError: com.sun.tools.javac.code.TypeTag`**
+
+Este erro indica incompatibilidade entre Java e Maven. Soluções:
+
+1. **Verificar versão do Java**:
+```bash
+java -version  # Deve ser Java 21
+```
+
+2. **Instalar Java 21** (se necessário):
+```bash
+# macOS (Homebrew)
+brew install openjdk@21
+
+# Ubuntu/Debian
+sudo apt install openjdk-21-jdk
+
+# Windows (usar instalador do Adoptium/Temurin)
+```
+
+3. **Configurar JAVA_HOME**:
+```bash
+# macOS/Linux
+export JAVA_HOME=$(/usr/libexec/java_home -v 21)  # macOS
+export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64  # Linux
+
+# Adicione ao ~/.zshrc ou ~/.bashrc para permanência
+echo 'export JAVA_HOME=$(/usr/libexec/java_home -v 21)' >> ~/.zshrc
+```
+
+4. **Limpar cache do Maven**:
+```bash
+rm -rf ~/.m2/repository/org/apache/maven/plugins
+mvn clean install -U
+```
+
+5. **Usar script de build alternativo**:
+```bash
+chmod +x build.sh
+./build.sh
 ```
 
 ### 4. Deploy Automatizado via GitHub Actions
@@ -330,12 +378,17 @@ Cria uma nova avaliação
 
 | Tecnologia | Versão | Propósito |
 |------------|--------|-----------|
-| Java | 17 | Linguagem de programação |
+| Java | 21 | Linguagem de programação |
 | Spring Boot | 3.2.2 | Framework MVC |
 | Azure Functions | 4.x | Serverless computing |
 | Azure SQL Database | Serverless | Banco de dados relacional |
 | Azure Storage Queue | - | Fila de mensagens |
 | SendGrid | 4.10.2 | Serviço de e-mail |
+
+### Documentação Adicional
+
+- 📖 [TROUBLESHOOTING.md](TROUBLESHOOTING.md) - Guia completo de solução de problemas
+- 📖 [docs/FUNCTIONS.md](docs/FUNCTIONS.md) - Documentação detalhada das Azure Functions
 
 ---
 

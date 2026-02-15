@@ -2,9 +2,6 @@ package com.fiap.feedbackhub.model;
 
 import com.fiap.feedbackhub.enums.Urgencia;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -18,9 +15,6 @@ import java.time.LocalDateTime;
     @Index(name = "idx_urgencia", columnList = "urgencia"),
     @Index(name = "idx_nota", columnList = "nota")
 })
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Avaliacao {
 
     @Id
@@ -43,11 +37,70 @@ public class Avaliacao {
     @Column(nullable = false)
     private Boolean notificacaoEnviada = false;
 
+    public Avaliacao() {
+    }
+
+    public Avaliacao(Long id, String descricao, Integer nota, Urgencia urgencia, LocalDateTime dataEnvio, Boolean notificacaoEnviada) {
+        this.id = id;
+        this.descricao = descricao;
+        this.nota = nota;
+        this.urgencia = urgencia;
+        this.dataEnvio = dataEnvio;
+        this.notificacaoEnviada = notificacaoEnviada;
+    }
+
     @PrePersist
     protected void onCreate() {
         if (dataEnvio == null) {
             dataEnvio = LocalDateTime.now();
         }
     }
-}
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+
+    public Integer getNota() {
+        return nota;
+    }
+
+    public void setNota(Integer nota) {
+        this.nota = nota;
+    }
+
+    public Urgencia getUrgencia() {
+        return urgencia;
+    }
+
+    public void setUrgencia(Urgencia urgencia) {
+        this.urgencia = urgencia;
+    }
+
+    public LocalDateTime getDataEnvio() {
+        return dataEnvio;
+    }
+
+    public void setDataEnvio(LocalDateTime dataEnvio) {
+        this.dataEnvio = dataEnvio;
+    }
+
+    public Boolean getNotificacaoEnviada() {
+        return notificacaoEnviada;
+    }
+
+    public void setNotificacaoEnviada(Boolean notificacaoEnviada) {
+        this.notificacaoEnviada = notificacaoEnviada;
+    }
+}

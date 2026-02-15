@@ -5,7 +5,8 @@ import com.fiap.feedbackhub.service.EmailService;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.QueueTrigger;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -18,8 +19,9 @@ import java.util.Map;
  * Segunda função serverless - Responsabilidade: Processar fila e enviar notificações de avaliações críticas
  */
 @Component
-@Slf4j
 public class NotificacaoUrgenciaFunction {
+
+    private static final Logger log = LoggerFactory.getLogger(NotificacaoUrgenciaFunction.class);
 
     @Autowired
     private EmailService emailService;

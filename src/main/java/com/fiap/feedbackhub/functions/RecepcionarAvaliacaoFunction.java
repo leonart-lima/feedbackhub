@@ -7,7 +7,8 @@ import com.microsoft.azure.functions.*;
 import com.microsoft.azure.functions.annotation.AuthorizationLevel;
 import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -18,8 +19,9 @@ import java.util.Optional;
  * Primeira função serverless - Responsabilidade: Receber e processar avaliações
  */
 @Component
-@Slf4j
 public class RecepcionarAvaliacaoFunction {
+
+    private static final Logger log = LoggerFactory.getLogger(RecepcionarAvaliacaoFunction.class);
 
     @Autowired
     private AvaliacaoService avaliacaoService;

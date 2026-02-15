@@ -4,8 +4,8 @@ import com.fiap.feedbackhub.dto.RelatorioSemanalDTO;
 import com.fiap.feedbackhub.enums.Urgencia;
 import com.fiap.feedbackhub.model.Avaliacao;
 import com.fiap.feedbackhub.repository.AvaliacaoRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -22,15 +22,20 @@ import java.util.stream.Collectors;
  * Business layer do padrão MVC
  */
 @Service
-@Slf4j
-@RequiredArgsConstructor
 public class RelatorioService {
+
+    private static final Logger log = LoggerFactory.getLogger(RelatorioService.class);
 
     private final AvaliacaoRepository avaliacaoRepository;
     private final EmailService emailService;
 
     @Value("${relatorio.semanal.titulo}")
     private String tituloRelatorio;
+
+    public RelatorioService(AvaliacaoRepository avaliacaoRepository, EmailService emailService) {
+        this.avaliacaoRepository = avaliacaoRepository;
+        this.emailService = emailService;
+    }
 
     /**
      * Gera relatório semanal de avaliações
