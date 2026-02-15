@@ -1,0 +1,21 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "java",
+    "FUNCTIONS_EXTENSION_VERSION": "~4",
+
+    "DB_URL": "jdbc:sqlserver://localhost:1433;database=feedbackhub;encrypt=false",
+    "DB_USERNAME": "sa",
+    "DB_PASSWORD": "YourPassword123!",
+    "SHOW_SQL": "true",
+
+    "AZURE_STORAGE_CONNECTION_STRING": "UseDevelopmentStorage=true",
+
+    "SENDGRID_API_KEY": "your-sendgrid-api-key-here",
+    "SENDGRID_FROM_EMAIL": "noreply@feedbackhub.com",
+    "ADMIN_EMAILS": "admin@feedbackhub.com",
+    "REPORT_EMAILS": "relatorios@feedbackhub.com"
+  }
+}
+

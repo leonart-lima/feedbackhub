@@ -1,0 +1,42 @@
+# Arquivos de build
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+# IDEs
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Azure Functions
+local.settings.json
+__blobstorage__/
+__queuestorage__/
+__azurite_db*__.json
+.python_packages/
+
+# Secrets
+application-local.yml
+application-prod.yml
+*.env
+
+# Maven
+.mvn/wrapper/maven-wrapper.jar
+
+# Node (se usar ferramentas frontend)
+node_modules/
+package-lock.json
+
