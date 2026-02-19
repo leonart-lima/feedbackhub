@@ -1,0 +1,49 @@
+spring:
+  application:
+    name: feedbackhub
+
+  profiles:
+    active: ${SPRING_PROFILE:cloud}
+
+  datasource:
+    url: ${DB_URL:jdbc:sqlserver://feedbackhub-server-55878.database.windows.net:1433;database=feedbackhub;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;}
+    username: ${DB_USERNAME:azureuser}
+    password: ${DB_PASSWORD:FeedbackHub@2026!}
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: ${SHOW_SQL:false}
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.SQLServerDialect
+        format_sql: true
+
+# Azure Communication Services
+azure:
+  communication:
+    connection-string: ${AZURE_COMMUNICATION_CONNECTION_STRING}
+    from-email: ${AZURE_COMMUNICATION_FROM_EMAIL:DoNotReply@d121e4d3-ff93-4bad-b352-c5082a883eed.azurecomm.net}
+
+  storage:
+    connection-string: ${AZURE_STORAGE_CONNECTION_STRING}
+
+  email:
+    admin-recipients: ${ADMIN_EMAILS:admin@feedbackhub.com}
+    report-recipients: ${REPORT_EMAILS:relatorios@feedbackhub.com}
+
+# Configurações de Relatórios
+relatorio:
+  semanal:
+    titulo: "FeedbackHub - Relatório Semanal de Avaliações"
+    diasRetroativos: 7
+
+# Logging
+logging:
+  level:
+    root: INFO
+    com.fiap.feedbackhub: DEBUG
+    com.azure: WARN
+    org.hibernate: WARN
+

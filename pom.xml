@@ -29,8 +29,8 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <azure.functions.version>3.1.0</azure.functions.version>
         <azure.functions.maven.plugin.version>1.34.0</azure.functions.maven.plugin.version>
-        <functionAppName>feedbackhub-${maven.build.timestamp}</functionAppName>
-        <functionAppRegion>eastus</functionAppRegion>
+        <functionAppName>feedbackhub-func</functionAppName>
+        <functionAppRegion>brazilsouth</functionAppRegion>
         <functionResourceGroup>feedbackhub-rg</functionResourceGroup>
     </properties>
 
@@ -74,11 +74,11 @@
             <version>12.20.0</version>
         </dependency>
 
-        <!-- SendGrid for Email -->
+        <!-- Azure Communication Services Email -->
         <dependency>
-            <groupId>com.sendgrid</groupId>
-            <artifactId>sendgrid-java</artifactId>
-            <version>4.10.2</version>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-communication-email</artifactId>
+            <version>1.0.7</version>
         </dependency>
 
 
@@ -111,8 +111,36 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.6.1</version>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/azure-functions/${functionAppName}/lib</outputDirectory>
+                            <includeScope>runtime</includeScope>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
 
             <plugin>
@@ -120,9 +148,9 @@
                 <artifactId>azure-functions-maven-plugin</artifactId>
                 <version>${azure.functions.maven.plugin.version}</version>
                 <configuration>
-                    <resourceGroup>${functionResourceGroup}</resourceGroup>
+                    <resourceGroup>feedbackhub-rg</resourceGroup>
                     <appName>${functionAppName}</appName>
-                    <region>${functionAppRegion}</region>
+                    <region>brazilsouth</region>
                     <runtime>
                         <os>linux</os>
                         <javaVersion>21</javaVersion>

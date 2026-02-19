@@ -1,21 +1,25 @@
 package com.fiap.feedbackhub.service;
 
-import com.sendgrid.Method;
-import com.sendgrid.Request;
-import com.sendgrid.Response;
-import com.sendgrid.SendGrid;
-import com.sendgrid.helpers.mail.Mail;
-import com.sendgrid.helpers.mail.objects.Content;
-import com.sendgrid.helpers.mail.objects.Email;
+import com.azure.communication.email.EmailClient;
+import com.azure.communication.email.EmailClientBuilder;
+import com.azure.communication.email.models.EmailAddress;
+import com.azure.communication.email.models.EmailMessage;
+import com.azure.communication.email.models.EmailSendResult;
+import com.azure.communication.email.models.EmailSendStatus;
+import com.azure.core.util.polling.PollResponse;
+import com.azure.core.util.polling.SyncPoller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
+import java.time.Duration;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
- * Service para envio de e-mails usando SendGrid
+ * Service para envio de e-mails usando Azure Communication Services
  * Business layer do padrão MVC
  */
 @Service
@@ -23,8 +27,8 @@ public class EmailService {
 
     private static final Logger log = LoggerFactory.getLogger(EmailService.class);
 
-    private final SendGrid sendGrid;
-    private final Email fromEmail;
+    private final EmailClient emailClient;
+    private final String fromEmail;
 
     @Value("${azure.email.admin-recipients}")
     private String adminEmails;
@@ -33,12 +37,17 @@ public class EmailService {
     private String reportEmails;
 
     public EmailService(
-            @Value("${azure.sendgrid.api-key}") String apiKey,
-            @Value("${azure.sendgrid.from-email}") String fromEmailAddress,
-            @Value("${azure.sendgrid.from-name}") String fromName) {
+            @Value("${azure.communication.connection-string}") String connectionString,
+            @Value("${azure.communication.from-email}") String fromEmailAddress) {
 
-        this.sendGrid = new SendGrid(apiKey);
-        this.fromEmail = new Email(fromEmailAddress, fromName);
+        this.emailClient = new EmailClientBuilder()
+                .connectionString(connectionString)
+                .buildClient();
+
+        this.fromEmail = fromEmailAddress;
+
+        log.info("EmailService inicializado com Azure Communication Services");
+        log.info("E-mail remetente: {}", fromEmailAddress);
     }
 
     /**
@@ -62,30 +71,47 @@ public class EmailService {
     }
 
     /**
-     * Envia e-mail genérico
+     * Envia e-mail genérico usando Azure Communication Services
      */
     private void enviarEmail(String destinatario, String assunto, String conteudoHtml) {
         try {
-            Email toEmail = new Email(destinatario);
-            Content content = new Content("text/html", conteudoHtml);
-            Mail mail = new Mail(fromEmail, assunto, toEmail, content);
+            log.info("Preparando envio de e-mail para: {}", destinatario);
 
-            Request request = new Request();
-            request.setMethod(Method.POST);
-            request.setEndpoint("mail/send");
-            request.setBody(mail.build());
+            // Criar lista de destinatários
+            List<EmailAddress> toRecipients = Arrays.asList(
+                new EmailAddress(destinatario)
+            );
 
-            Response response = sendGrid.api(request);
+            // Criar mensagem de e-mail
+            EmailMessage message = new EmailMessage()
+                .setSenderAddress(fromEmail)
+                .setToRecipients(toRecipients)
+                .setSubject(assunto)
+                .setBodyHtml(conteudoHtml);
 
-            if (response.getStatusCode() >= 200 && response.getStatusCode() < 300) {
-                log.info("E-mail enviado com sucesso para: {}", destinatario);
+            // Enviar e-mail de forma assíncrona
+            SyncPoller<EmailSendResult, EmailSendResult> poller = emailClient.beginSend(message);
+
+            // Aguardar conclusão (timeout de 60 segundos)
+            PollResponse<EmailSendResult> response = poller.waitForCompletion(Duration.ofSeconds(60));
+
+            if (response != null && response.getValue() != null) {
+                EmailSendResult result = response.getValue();
+
+                if (result.getStatus() == EmailSendStatus.SUCCEEDED) {
+                    log.info("✅ E-mail enviado com sucesso para: {} (ID: {})",
+                            destinatario, result.getId());
+                } else {
+                    log.warn("⚠️ Status inesperado ao enviar e-mail para {}: {}",
+                            destinatario, result.getStatus());
+                }
             } else {
-                log.warn("Resposta inesperada ao enviar e-mail: {}", response.getStatusCode());
+                log.warn("⚠️ Resposta vazia ao enviar e-mail para: {}", destinatario);
             }
 
-        } catch (IOException e) {
-            log.error("Erro ao enviar e-mail para {}: {}", destinatario, e.getMessage(), e);
-            throw new RuntimeException("Falha ao enviar e-mail", e);
+        } catch (Exception e) {
+            log.error("❌ Erro ao enviar e-mail para {}: {}", destinatario, e.getMessage(), e);
+            throw new RuntimeException("Falha ao enviar e-mail via Azure Communication Services", e);
         }
     }
 }

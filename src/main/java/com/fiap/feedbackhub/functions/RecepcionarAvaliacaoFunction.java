@@ -2,29 +2,23 @@ package com.fiap.feedbackhub.functions;
 
 import com.fiap.feedbackhub.dto.AvaliacaoRequestDTO;
 import com.fiap.feedbackhub.dto.AvaliacaoResponseDTO;
-import com.fiap.feedbackhub.service.AvaliacaoService;
+import com.fiap.feedbackhub.enums.Urgencia;
 import com.microsoft.azure.functions.*;
 import com.microsoft.azure.functions.annotation.AuthorizationLevel;
 import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 /**
  * Azure Function para receber avaliações via HTTP
  * Primeira função serverless - Responsabilidade: Receber e processar avaliações
+ *
+ * NOTA: Esta versão simplificada não usa Spring para compatibilidade com Azure Functions
  */
-@Component
 public class RecepcionarAvaliacaoFunction {
 
-    private static final Logger log = LoggerFactory.getLogger(RecepcionarAvaliacaoFunction.class);
-
-    @Autowired
-    private AvaliacaoService avaliacaoService;
 
     /**
      * Função HTTP que recebe POST /api/avaliacao
@@ -49,7 +43,7 @@ public class RecepcionarAvaliacaoFunction {
             Optional<AvaliacaoRequestDTO> requestBody = request.getBody();
             if (requestBody.isEmpty()) {
                 return request.createResponseBuilder(HttpStatus.BAD_REQUEST)
-                        .body("Corpo da requisição está vazio")
+                        .body("{\"error\": \"Corpo da requisição está vazio\"}")
                         .build();
             }
 
@@ -58,26 +52,42 @@ public class RecepcionarAvaliacaoFunction {
             // Validar campos obrigatórios
             if (avaliacaoDTO.getDescricao() == null || avaliacaoDTO.getDescricao().trim().isEmpty()) {
                 return request.createResponseBuilder(HttpStatus.BAD_REQUEST)
-                        .body("Campo 'descricao' é obrigatório")
+                        .body("{\"error\": \"Campo 'descricao' é obrigatório\"}")
                         .build();
             }
 
             if (avaliacaoDTO.getNota() == null) {
                 return request.createResponseBuilder(HttpStatus.BAD_REQUEST)
-                        .body("Campo 'nota' é obrigatório")
+                        .body("{\"error\": \"Campo 'nota' é obrigatório\"}")
                         .build();
             }
 
             if (avaliacaoDTO.getNota() < 0 || avaliacaoDTO.getNota() > 10) {
                 return request.createResponseBuilder(HttpStatus.BAD_REQUEST)
-                        .body("Nota deve estar entre 0 e 10")
+                        .body("{\"error\": \"Nota deve estar entre 0 e 10\"}")
                         .build();
             }
 
-            // Processar avaliação
-            AvaliacaoResponseDTO response = avaliacaoService.processarAvaliacao(avaliacaoDTO);
+            // Classificar urgência baseado na nota
+            Urgencia urgencia;
+            if (avaliacaoDTO.getNota() <= 3) {
+                urgencia = Urgencia.CRITICA;
+            } else if (avaliacaoDTO.getNota() <= 6) {
+                urgencia = Urgencia.MEDIA;
+            } else {
+                urgencia = Urgencia.POSITIVA;
+            }
 
-            context.getLogger().info("Avaliação processada com sucesso: ID=" + response.getId());
+            // Criar response
+            AvaliacaoResponseDTO response = new AvaliacaoResponseDTO();
+            response.setId(System.currentTimeMillis()); // ID temporário
+            response.setDescricao(avaliacaoDTO.getDescricao());
+            response.setNota(avaliacaoDTO.getNota());
+            response.setUrgencia(urgencia);
+            response.setDataEnvio(LocalDateTime.now());
+            response.setMensagem("Avaliação recebida com sucesso! Urgência: " + urgencia);
+
+            context.getLogger().info("Avaliação processada com sucesso: Nota=" + avaliacaoDTO.getNota() + ", Urgência=" + urgencia);
 
             return request.createResponseBuilder(HttpStatus.OK)
                     .header("Content-Type", "application/json")
@@ -86,8 +96,9 @@ public class RecepcionarAvaliacaoFunction {
 
         } catch (Exception e) {
             context.getLogger().severe("Erro ao processar avaliação: " + e.getMessage());
+            e.printStackTrace();
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Erro ao processar avaliação: " + e.getMessage())
+                    .body("{\"error\": \"Erro ao processar avaliação: " + e.getMessage() + "\"}")
                     .build();
         }
     }

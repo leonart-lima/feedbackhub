@@ -1,21 +1,22 @@
 {
   "IsEncrypted": false,
   "Values": {
-    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "AzureWebJobsStorage": "DefaultEndpointsProtocol=https;EndpointSuffix=core.windows.net;AccountName=feedbackhubst1455878;AccountKey=ST/ty25cuNJ3ON610VI6EgFl5+Q4BZEUzSWatrSHG2xvzes0ZGMfUnezYB8VNa+qzNJXNbfDvQ8C+AStaP/b1A==;BlobEndpoint=https://feedbackhubst1455878.blob.core.windows.net/;FileEndpoint=https://feedbackhubst1455878.file.core.windows.net/;QueueEndpoint=https://feedbackhubst1455878.queue.core.windows.net/;TableEndpoint=https://feedbackhubst1455878.table.core.windows.net/",
     "FUNCTIONS_WORKER_RUNTIME": "java",
     "FUNCTIONS_EXTENSION_VERSION": "~4",
 
-    "DB_URL": "jdbc:sqlserver://localhost:1433;database=feedbackhub;encrypt=false",
-    "DB_USERNAME": "sa",
-    "DB_PASSWORD": "YourPassword123!",
-    "SHOW_SQL": "true",
+    "DB_URL": "jdbc:sqlserver://feedbackhub-server-55878.database.windows.net:1433;database=feedbackhub;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;",
+    "DB_USERNAME": "azureuser",
+    "DB_PASSWORD": "FeedbackHub@2026!",
+    "SHOW_SQL": "false",
 
-    "AZURE_STORAGE_CONNECTION_STRING": "UseDevelopmentStorage=true",
+    "AZURE_STORAGE_CONNECTION_STRING": "DefaultEndpointsProtocol=https;EndpointSuffix=core.windows.net;AccountName=feedbackhubst1455878;AccountKey=ST/ty25cuNJ3ON610VI6EgFl5+Q4BZEUzSWatrSHG2xvzes0ZGMfUnezYB8VNa+qzNJXNbfDvQ8C+AStaP/b1A==;BlobEndpoint=https://feedbackhubst1455878.blob.core.windows.net/;FileEndpoint=https://feedbackhubst1455878.file.core.windows.net/;QueueEndpoint=https://feedbackhubst1455878.queue.core.windows.net/;TableEndpoint=https://feedbackhubst1455878.table.core.windows.net/",
+    "AZURE_COMMUNICATION_CONNECTION_STRING": "endpoint=https://feedbackhub-comm-55878.unitedstates.communication.azure.com/;accesskey=C7nAGjIV2yrUTzr3ptarTu7YBLkcmDbl4r3262ONS4dMgDdeEUuZJQQJ99CBACULyCp4YGpdAAAAAZCSqpwI",
+    "AZURE_COMMUNICATION_FROM_EMAIL": "DoNotReply@d121e4d3-ff93-4bad-b352-c5082a883eed.azurecomm.net",
 
-    "SENDGRID_API_KEY": "your-sendgrid-api-key-here",
-    "SENDGRID_FROM_EMAIL": "noreply@feedbackhub.com",
     "ADMIN_EMAILS": "admin@feedbackhub.com",
-    "REPORT_EMAILS": "relatorios@feedbackhub.com"
+    "REPORT_EMAILS": "relatorios@feedbackhub.com",
+    "WEBSITE_TIME_ZONE": "E. South America Standard Time"
   }
 }
 

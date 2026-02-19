@@ -2,9 +2,39 @@
 
 [![Deploy Azure Functions](https://github.com/yourusername/feedbackhub/actions/workflows/deploy.yml/badge.svg)](https://github.com/yourusername/feedbackhub/actions/workflows/deploy.yml)
 
+## 🚀 Início Rápido
+
+```bash
+# 1. Login no Azure
+az login
+
+# 2. Provisionar recursos com Azure Communication Services (5-10 min)
+./azure-setup.sh
+
+# 3. Deploy da aplicação (3-5 min)
+mvn clean package azure-functions:deploy
+```
+
+**Serviço de E-mail**: Azure Communication Services (nativo Azure, 250 e-mails grátis/mês)
+
+---
+
+📖 **Guias Disponíveis**:
+📖 **Guias Disponíveis**:
+- 🎯 [QUICKSTART-AZURE.md](QUICKSTART-AZURE.md) - Guia rápido de deploy ⭐ **COMECE AQUI**
+- ✅ [CHECKLIST.md](CHECKLIST.md) - Checklist completo de validação
+- 📊 [EXECUTIVE-SUMMARY.md](EXECUTIVE-SUMMARY.md) - Resumo executivo do projeto
+- 🏗️ [ARCHITECTURE.md](ARCHITECTURE.md) - Diagramas e arquitetura detalhada
+- ☁️ [docs/AZURE_SETUP.md](docs/AZURE_SETUP.md) - Setup detalhado dos recursos Azure
+- 🔧 [docs/AZURE_COMMANDS.md](docs/AZURE_COMMANDS.md) - Comandos úteis do Azure CLI
+- 📋 [docs/FUNCTIONS.md](docs/FUNCTIONS.md) - Documentação das Azure Functions
+- 🔍 [TROUBLESHOOTING.md](TROUBLESHOOTING.md) - Solução de problemas
+
+---
+
 ## 📋 Descrição do Projeto
 
-FeedbackHub é uma plataforma de feedback serverless desenvolvida para permitir que estudantes avaliem aulas e administradores acompanhem a satisfação dos alunos em tempo real. O sistema utiliza **Azure Functions** para automação de processos, **Azure SQL Database** para armazenamento de dados, e **SendGrid** para notificações por e-mail.
+FeedbackHub é uma plataforma de feedback serverless desenvolvida para permitir que estudantes avaliem aulas e administradores acompanhem a satisfação dos alunos em tempo real. O sistema utiliza **Azure Functions** para automação de processos, **Azure SQL Database** para armazenamento de dados, e **Azure Communication Services** para envio de e-mails.
 
 ### Características Principais
 
@@ -41,8 +71,8 @@ FeedbackHub é uma plataforma de feedback serverless desenvolvida para permitir 
 │           │                         │                           │
 │           │                         ▼                           │
 │           │               ┌──────────────────┐                │
-│           │               │    SendGrid      │                │
-│           │               │  Email Service   │                │
+│           │               │ Azure Communic.  │                │
+│           │               │ Services (Email) │                │
 │           │               └──────────────────┘                │
 │           │                                                     │
 │           ▼                                                     │
@@ -79,7 +109,7 @@ FeedbackHub é uma plataforma de feedback serverless desenvolvida para permitir 
 - **Processo**:
   1. Lê mensagem da fila
   2. Gera e-mail formatado com dados da avaliação
-  3. Envia notificação via SendGrid
+  3. Envia notificação via Azure Communication Services
   4. Marca avaliação como notificada
 - **Output**: E-mail enviado aos administradores
 
@@ -134,7 +164,6 @@ src/main/java/com/fiap/feedbackhub/
 - **Maven 3.8+**
 - **Azure CLI** instalado e configurado
 - **Conta Azure** com créditos disponíveis
-- **SendGrid Account** (100 emails/dia gratuitos)
 
 ### 1. Configurar Azure Resources
 
@@ -229,8 +258,8 @@ az functionapp config appsettings set \
     "DB_USERNAME=azureuser" \
     "DB_PASSWORD=YourSecurePassword123!" \
     "AZURE_STORAGE_CONNECTION_STRING=$STORAGE_CONNECTION" \
-    "SENDGRID_API_KEY=your-sendgrid-api-key" \
-    "SENDGRID_FROM_EMAIL=noreply@feedbackhub.com" \
+    "AZURE_COMMUNICATION_CONNECTION_STRING=your-communication-connection-string" \
+    "AZURE_COMMUNICATION_FROM_EMAIL=DoNotReply@xxxxxxxx.azurecomm.net" \
     "ADMIN_EMAILS=admin@example.com" \
     "REPORT_EMAILS=reports@example.com"
 ```
@@ -311,7 +340,8 @@ az functionapp deployment list-publishing-profiles \
      - `DB_USERNAME`
      - `DB_PASSWORD`
      - `AZURE_STORAGE_CONNECTION_STRING`
-     - `SENDGRID_API_KEY`
+     - `AZURE_COMMUNICATION_CONNECTION_STRING`
+     - `AZURE_COMMUNICATION_FROM_EMAIL`
      - `ADMIN_EMAILS`
      - `REPORT_EMAILS`
 
@@ -327,7 +357,7 @@ O monitoramento está configurado automaticamente via `host.json`:
 
 - **Logs de execução** de todas as funções
 - **Métricas de performance** (duração, taxa de sucesso)
-- **Rastreamento de dependências** (SQL, Storage, SendGrid)
+- **Rastreamento de dependências** (SQL, Storage, Azure Communication Services)
 - **Alertas personalizados**
 
 ---
@@ -374,6 +404,24 @@ Cria uma nova avaliação
 
 ## 📚 Documentação Técnica
 
+### 🚀 Guias Rápidos
+
+| Documento | Descrição |
+|-----------|-----------|
+| **[QUICKSTART-AZURE.md](QUICKSTART-AZURE.md)** | 🎯 Guia rápido de deploy (START HERE!) |
+| **[CHECKLIST.md](CHECKLIST.md)** | ✅ Checklist completo de deploy |
+| **[docs/AZURE_SETUP.md](docs/AZURE_SETUP.md)** | ☁️ Guia detalhado de setup Azure |
+| **[docs/AZURE_COMMANDS.md](docs/AZURE_COMMANDS.md)** | 🔧 Comandos úteis do Azure CLI |
+| **[docs/FUNCTIONS.md](docs/FUNCTIONS.md)** | 📋 Documentação das Azure Functions |
+| **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** | 🔍 Solução de problemas |
+
+### 📜 Scripts Automatizados
+
+| Script | Descrição |
+|--------|-----------|
+| `azure-setup.sh` | Cria todos os recursos na Azure com Azure Communication Services |
+| `build.sh` | Build alternativo do projeto |
+
 ### Tecnologias Utilizadas
 
 | Tecnologia | Versão | Propósito |
@@ -383,12 +431,8 @@ Cria uma nova avaliação
 | Azure Functions | 4.x | Serverless computing |
 | Azure SQL Database | Serverless | Banco de dados relacional |
 | Azure Storage Queue | - | Fila de mensagens |
-| SendGrid | 4.10.2 | Serviço de e-mail |
-
-### Documentação Adicional
-
-- 📖 [TROUBLESHOOTING.md](TROUBLESHOOTING.md) - Guia completo de solução de problemas
-- 📖 [docs/FUNCTIONS.md](docs/FUNCTIONS.md) - Documentação detalhada das Azure Functions
+| Azure Communication Services | 1.0.7 | Serviço de e-mail |
+| Application Insights | - | Monitoramento e logs |
 
 ---
 
