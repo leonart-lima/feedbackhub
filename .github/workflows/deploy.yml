@@ -42,47 +42,7 @@ jobs:
         scm-do-build-during-deployment: false
         enable-oryx-build: false
 
-    - name: 'Sync App Settings'
-      uses: azure/appservice-settings@v1
-      with:
-        app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
-        mask-inputs: false
-        app-settings-json: |
-          [
-            {
-              "name": "DB_URL",
-              "value": "${{ secrets.DB_URL }}",
-              "slotSetting": false
-            },
-            {
-              "name": "DB_USERNAME",
-              "value": "${{ secrets.DB_USERNAME }}",
-              "slotSetting": false
-            },
-            {
-              "name": "DB_PASSWORD",
-              "value": "${{ secrets.DB_PASSWORD }}",
-              "slotSetting": true
-            },
-            {
-              "name": "AZURE_STORAGE_CONNECTION_STRING",
-              "value": "${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}",
-              "slotSetting": true
-            },
-            {
-              "name": "SENDGRID_API_KEY",
-              "value": "${{ secrets.SENDGRID_API_KEY }}",
-              "slotSetting": true
-            },
-            {
-              "name": "ADMIN_EMAILS",
-              "value": "${{ secrets.ADMIN_EMAILS }}",
-              "slotSetting": false
-            },
-            {
-              "name": "REPORT_EMAILS",
-              "value": "${{ secrets.REPORT_EMAILS }}",
-              "slotSetting": false
-            }
-          ]
+    # Note: App settings are already configured in Azure Portal
+    # No need to sync them on every deployment as they persist across deployments
+    # To update settings, use Azure CLI or Portal directly
 
