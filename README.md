@@ -20,13 +20,27 @@ mvn clean package azure-functions:deploy
 ---
 
 📖 **Guias Disponíveis**:
-📖 **Guias Disponíveis**:
-- 🎯 [QUICKSTART-AZURE.md](QUICKSTART-AZURE.md) - Guia rápido de deploy ⭐ **COMECE AQUI**
+
+### 🎯 Começar Agora
+- 🚀 **[START-HERE.md](START-HERE.md)** - ⭐ **COMECE AQUI!** Início rápido em 1 minuto
+- 📖 **[GUIA-COMPLETO-FINAL.md](GUIA-COMPLETO-FINAL.md)** - Guia completo com TUDO
+
+### 📧 E-mails e Testes
+- 📧 **[CONFIGURACAO-EMAILS.md](CONFIGURACAO-EMAILS.md)** - Para onde vão os e-mails e como configurar
+- 🔥 **[CURLS-COMPLETOS.md](CURLS-COMPLETOS.md)** - Todos os CURLs de teste com exemplos
+
+### 🐛 Debug e Desenvolvimento
+- 🐛 **[DEBUG-INTELLIJ-COMPLETO.md](DEBUG-INTELLIJ-COMPLETO.md)** - Como debugar no IntelliJ IDEA
+
+### ☁️ Azure e Deploy
+- 🎯 [QUICKSTART-AZURE.md](QUICKSTART-AZURE.md) - Guia rápido de deploy no Azure
 - ✅ [CHECKLIST.md](CHECKLIST.md) - Checklist completo de validação
 - 📊 [EXECUTIVE-SUMMARY.md](EXECUTIVE-SUMMARY.md) - Resumo executivo do projeto
 - 🏗️ [ARCHITECTURE.md](ARCHITECTURE.md) - Diagramas e arquitetura detalhada
 - ☁️ [docs/AZURE_SETUP.md](docs/AZURE_SETUP.md) - Setup detalhado dos recursos Azure
 - 🔧 [docs/AZURE_COMMANDS.md](docs/AZURE_COMMANDS.md) - Comandos úteis do Azure CLI
+
+### 📋 Documentação Técnica
 - 📋 [docs/FUNCTIONS.md](docs/FUNCTIONS.md) - Documentação das Azure Functions
 - 🔍 [TROUBLESHOOTING.md](TROUBLESHOOTING.md) - Solução de problemas
 

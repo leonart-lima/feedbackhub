@@ -1,8 +1,10 @@
 package com.fiap.feedbackhub.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fiap.feedbackhub.enums.Urgencia;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * DTO para resposta de avaliação
@@ -13,9 +15,14 @@ public class AvaliacaoResponseDTO {
     private Long id;
     private String descricao;
     private Integer nota;
-    private Urgencia urgencia;
-    private LocalDateTime dataEnvio;
+    private String urgencia;  // String para compatibilidade com Azure Functions
+
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private String dataEnvio;  // String para compatibilidade com Azure Functions
+
     private String mensagem;
+
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
     public AvaliacaoResponseDTO() {
     }
@@ -24,10 +31,12 @@ public class AvaliacaoResponseDTO {
         this.id = id;
         this.descricao = descricao;
         this.nota = nota;
-        this.urgencia = urgencia;
-        this.dataEnvio = dataEnvio;
+        this.urgencia = urgencia != null ? urgencia.toString() : null;
+        this.dataEnvio = dataEnvio != null ? dataEnvio.format(formatter) : null;
         this.mensagem = mensagem;
     }
+
+    // Getters and Setters
 
     public Long getId() {
         return id;
@@ -53,19 +62,27 @@ public class AvaliacaoResponseDTO {
         this.nota = nota;
     }
 
-    public Urgencia getUrgencia() {
+    public String getUrgencia() {
         return urgencia;
     }
 
     public void setUrgencia(Urgencia urgencia) {
+        this.urgencia = urgencia != null ? urgencia.toString() : null;
+    }
+
+    public void setUrgencia(String urgencia) {
         this.urgencia = urgencia;
     }
 
-    public LocalDateTime getDataEnvio() {
+    public String getDataEnvio() {
         return dataEnvio;
     }
 
     public void setDataEnvio(LocalDateTime dataEnvio) {
+        this.dataEnvio = dataEnvio != null ? dataEnvio.format(formatter) : null;
+    }
+
+    public void setDataEnvio(String dataEnvio) {
         this.dataEnvio = dataEnvio;
     }
 

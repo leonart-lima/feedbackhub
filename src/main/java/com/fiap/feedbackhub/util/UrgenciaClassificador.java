@@ -1,20 +1,22 @@
 package com.fiap.feedbackhub.util;
 
 import com.fiap.feedbackhub.enums.Urgencia;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
  * Utilitário para classificar urgência baseado na nota
+ *
+ * Regras de classificação:
+ * - Nota 0-3: CRÍTICA (requer atenção imediata)
+ * - Nota 4-6: MÉDIA (requer atenção)
+ * - Nota 7-10: POSITIVA (feedback positivo)
  */
 @Component
 public class UrgenciaClassificador {
 
-    @Value("${feedback.urgencia.critica.nota-maxima}")
-    private Integer notaMaximaCritica;
-
-    @Value("${feedback.urgencia.media.nota-maxima}")
-    private Integer notaMaximaMedia;
+    // Constantes de classificação
+    private static final int NOTA_MAXIMA_CRITICA = 3;
+    private static final int NOTA_MAXIMA_MEDIA = 6;
 
     /**
      * Classifica a urgência baseado na nota da avaliação
@@ -23,9 +25,13 @@ public class UrgenciaClassificador {
      * @return Urgencia classificada
      */
     public Urgencia classificar(Integer nota) {
-        if (nota <= notaMaximaCritica) {
+        if (nota == null) {
+            throw new IllegalArgumentException("Nota não pode ser nula");
+        }
+
+        if (nota <= NOTA_MAXIMA_CRITICA) {
             return Urgencia.CRITICA;
-        } else if (nota <= notaMaximaMedia) {
+        } else if (nota <= NOTA_MAXIMA_MEDIA) {
             return Urgencia.MEDIA;
         } else {
             return Urgencia.POSITIVA;
@@ -36,7 +42,10 @@ public class UrgenciaClassificador {
      * Verifica se a avaliação é crítica
      */
     public boolean isCritica(Integer nota) {
-        return nota <= notaMaximaCritica;
+        if (nota == null) {
+            return false;
+        }
+        return nota <= NOTA_MAXIMA_CRITICA;
     }
 }
 

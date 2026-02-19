@@ -28,10 +28,20 @@ azure:
 
   storage:
     connection-string: ${AZURE_STORAGE_CONNECTION_STRING}
+    queue:
+      urgencia-name: ${AZURE_QUEUE_NAME:feedback-urgencia-queue}
 
   email:
-    admin-recipients: ${ADMIN_EMAILS:admin@feedbackhub.com}
-    report-recipients: ${REPORT_EMAILS:relatorios@feedbackhub.com}
+    admin-recipients: ${ADMIN_EMAILS:leonart16@gmail.com}
+    report-recipients: ${REPORT_EMAILS:leonart16@gmail.com}
+
+# Configurações de Feedback
+feedback:
+  urgencia:
+    critica:
+      nota-maxima: 3
+    media:
+      nota-maxima: 6
 
 # Configurações de Relatórios
 relatorio:
@@ -44,6 +54,11 @@ logging:
   level:
     root: INFO
     com.fiap.feedbackhub: DEBUG
-    com.azure: WARN
+    com.azure: ERROR
+    com.azure.communication: ERROR
+    com.azure.core: ERROR
+    com.azure.storage: ERROR
+    reactor.netty: ERROR
+    io.netty: ERROR
     org.hibernate: WARN
 

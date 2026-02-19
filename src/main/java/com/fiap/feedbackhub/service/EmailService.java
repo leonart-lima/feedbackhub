@@ -72,47 +72,115 @@ public class EmailService {
 
     /**
      * Envia e-mail genérico usando Azure Communication Services
+     * Com retry logic para SSL handshake failures
      */
     private void enviarEmail(String destinatario, String assunto, String conteudoHtml) {
-        try {
-            log.info("Preparando envio de e-mail para: {}", destinatario);
+        int maxRetries = 3;
+        int retryDelay = 2000; // 2 segundos
 
-            // Criar lista de destinatários
-            List<EmailAddress> toRecipients = Arrays.asList(
-                new EmailAddress(destinatario)
-            );
+        for (int tentativa = 1; tentativa <= maxRetries; tentativa++) {
+            try {
+                log.info("📧 Preparando envio de e-mail para: {} (Tentativa {}/{})",
+                        destinatario, tentativa, maxRetries);
+                log.info("   De: {}", fromEmail);
+                log.info("   Assunto: {}", assunto);
 
-            // Criar mensagem de e-mail
-            EmailMessage message = new EmailMessage()
-                .setSenderAddress(fromEmail)
-                .setToRecipients(toRecipients)
-                .setSubject(assunto)
-                .setBodyHtml(conteudoHtml);
+                // Criar lista de destinatários
+                List<EmailAddress> toRecipients = Arrays.asList(
+                    new EmailAddress(destinatario)
+                );
 
-            // Enviar e-mail de forma assíncrona
-            SyncPoller<EmailSendResult, EmailSendResult> poller = emailClient.beginSend(message);
+                // Criar mensagem de e-mail
+                EmailMessage message = new EmailMessage()
+                    .setSenderAddress(fromEmail)
+                    .setToRecipients(toRecipients)
+                    .setSubject(assunto)
+                    .setBodyHtml(conteudoHtml);
 
-            // Aguardar conclusão (timeout de 60 segundos)
-            PollResponse<EmailSendResult> response = poller.waitForCompletion(Duration.ofSeconds(60));
+                log.info("📤 Iniciando envio via Azure Communication Services...");
 
-            if (response != null && response.getValue() != null) {
-                EmailSendResult result = response.getValue();
+                // Enviar e-mail de forma assíncrona com timeout
+                SyncPoller<EmailSendResult, EmailSendResult> poller = emailClient.beginSend(message);
 
-                if (result.getStatus() == EmailSendStatus.SUCCEEDED) {
-                    log.info("✅ E-mail enviado com sucesso para: {} (ID: {})",
-                            destinatario, result.getId());
+                log.info("⏳ Aguardando resposta do Azure (timeout: 20 segundos)...");
+
+                // Aguardar conclusão com timeout reduzido
+                PollResponse<EmailSendResult> response = poller.waitForCompletion(Duration.ofSeconds(20));
+
+                log.info("📬 Resposta recebida do Azure");
+
+                if (response != null && response.getValue() != null) {
+                    EmailSendResult result = response.getValue();
+
+                    log.info("   Status: {}", result.getStatus());
+                    log.info("   Message ID: {}", result.getId());
+
+                    if (result.getStatus() == EmailSendStatus.SUCCEEDED) {
+                        log.info("✅ E-mail enviado com SUCESSO para: {} (ID: {})",
+                                destinatario, result.getId());
+                        return; // Sucesso, sair do loop
+                    } else if (result.getStatus() == EmailSendStatus.FAILED) {
+                        log.error("❌ FALHA ao enviar e-mail para {}: Status FAILED", destinatario);
+                        if (result.getError() != null) {
+                            log.error("   Erro: {}", result.getError().getMessage());
+                        }
+                    } else {
+                        log.warn("⚠️ Status inesperado ao enviar e-mail para {}: {}",
+                                destinatario, result.getStatus());
+                    }
                 } else {
-                    log.warn("⚠️ Status inesperado ao enviar e-mail para {}: {}",
-                            destinatario, result.getStatus());
+                    log.warn("⚠️ Resposta vazia ao enviar e-mail para: {}", destinatario);
                 }
-            } else {
-                log.warn("⚠️ Resposta vazia ao enviar e-mail para: {}", destinatario);
-            }
 
-        } catch (Exception e) {
-            log.error("❌ Erro ao enviar e-mail para {}: {}", destinatario, e.getMessage(), e);
-            throw new RuntimeException("Falha ao enviar e-mail via Azure Communication Services", e);
+                // Se chegou aqui, houve erro mas não exceção
+                if (tentativa < maxRetries) {
+                    log.info("⏳ Aguardando {} segundos antes da próxima tentativa...", retryDelay / 1000);
+                    Thread.sleep(retryDelay);
+                }
+
+            } catch (Exception e) {
+                boolean isSSLError = e.getMessage() != null &&
+                                    (e.getMessage().contains("SSL") ||
+                                     e.getMessage().contains("ssl") ||
+                                     e.getMessage().contains("handshake") ||
+                                     e.getClass().getName().contains("SSL"));
+
+                if (isSSLError) {
+                    log.error("❌ SSL/TLS Handshake Error na tentativa {}/{}", tentativa, maxRetries);
+                    log.error("   Mensagem: {}", e.getMessage());
+                    log.error("   Tipo: {}", e.getClass().getSimpleName());
+                    log.error("💡 CAUSA: Problema de conectividade SSL com Azure Communication Services");
+                } else {
+                    log.error("❌ EXCEÇÃO ao enviar e-mail para {} (Tentativa {}/{}): {}",
+                            destinatario, tentativa, maxRetries, e.getMessage());
+                    log.error("   Tipo da exceção: {}", e.getClass().getName());
+                }
+
+                if (tentativa == maxRetries) {
+                    log.error("   Stack trace completo:", e);
+                    log.error("❌ Todas as {} tentativas falharam", maxRetries);
+                    log.error("💡 SUGESTÕES:");
+                    log.error("   1. Verifique AZURE_COMMUNICATION_CONNECTION_STRING no local.settings.json");
+                    log.error("   2. Verifique se o domínio está verificado no Azure Portal");
+                    log.error("   3. Verifique conectividade de rede");
+                    log.error("   4. O Azure Communication Services pode estar com problemas");
+                } else {
+                    log.info("🔄 Tentando novamente em {} segundos...", retryDelay / 1000);
+                    try {
+                        Thread.sleep(retryDelay);
+                        retryDelay *= 2; // Exponential backoff
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        log.error("❌ Retry interrompido");
+                        break;
+                    }
+                }
+            }
         }
+
+        log.error("❌ FALHA FINAL: Não foi possível enviar e-mail para {} após {} tentativas",
+                destinatario, maxRetries);
+        log.warn("⚠️ O sistema continuará funcionando, mas o e-mail não foi enviado");
     }
 }
 

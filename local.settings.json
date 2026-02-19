@@ -14,8 +14,8 @@
     "AZURE_COMMUNICATION_CONNECTION_STRING": "endpoint=https://feedbackhub-comm-55878.unitedstates.communication.azure.com/;accesskey=C7nAGjIV2yrUTzr3ptarTu7YBLkcmDbl4r3262ONS4dMgDdeEUuZJQQJ99CBACULyCp4YGpdAAAAAZCSqpwI",
     "AZURE_COMMUNICATION_FROM_EMAIL": "DoNotReply@d121e4d3-ff93-4bad-b352-c5082a883eed.azurecomm.net",
 
-    "ADMIN_EMAILS": "admin@feedbackhub.com",
-    "REPORT_EMAILS": "relatorios@feedbackhub.com",
+    "ADMIN_EMAILS": "leonart16@gmail.com",
+    "REPORT_EMAILS": "leonart16@gmail.com",
     "WEBSITE_TIME_ZONE": "E. South America Standard Time"
   }
 }
