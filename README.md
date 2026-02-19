@@ -2,7 +2,24 @@
 
 [![Deploy Azure Functions](https://github.com/yourusername/feedbackhub/actions/workflows/deploy.yml/badge.svg)](https://github.com/yourusername/feedbackhub/actions/workflows/deploy.yml)
 
-## 🚀 Início Rápido
+## 🚀 Deploy Automático com GitHub Actions
+
+✨ **NOVO!** Deploy automático configurado! Toda vez que você fizer push para `main`, a aplicação é automaticamente implantada no Azure.
+
+📖 **Guia rápido**: [COMECE-DEPLOY-AUTOMATICO.md](COMECE-DEPLOY-AUTOMATICO.md) (3 passos, 5 minutos)
+
+```bash
+# Configure uma vez:
+./get-publish-profile.sh  # Obtém credenciais
+# Adicione secrets no GitHub (veja o guia)
+
+# Depois, é só fazer push:
+git push origin main  # ✨ Deploy automático!
+```
+
+---
+
+## 🚀 Início Rápido (Deploy Manual)
 
 ```bash
 # 1. Login no Azure
@@ -33,6 +50,8 @@ mvn clean package azure-functions:deploy
 - 🐛 **[DEBUG-INTELLIJ-COMPLETO.md](DEBUG-INTELLIJ-COMPLETO.md)** - Como debugar no IntelliJ IDEA
 
 ### ☁️ Azure e Deploy
+- ⚡ **[DEPLOY-AUTOMATICO-QUICKSTART.md](DEPLOY-AUTOMATICO-QUICKSTART.md)** - ⭐ Deploy automático com GitHub Actions
+- 📘 **[CONFIGURAR-DEPLOY-AUTOMATICO.md](CONFIGURAR-DEPLOY-AUTOMATICO.md)** - Guia completo de CI/CD
 - 🎯 [QUICKSTART-AZURE.md](QUICKSTART-AZURE.md) - Guia rápido de deploy no Azure
 - ✅ [CHECKLIST.md](CHECKLIST.md) - Checklist completo de validação
 - 📊 [EXECUTIVE-SUMMARY.md](EXECUTIVE-SUMMARY.md) - Resumo executivo do projeto

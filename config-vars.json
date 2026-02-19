@@ -1,0 +1,11 @@
+{
+  "DB_URL": "jdbc:sqlserver://feedbackhub-server-55878.database.windows.net:1433;database=feedbackhub;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;",
+  "DB_USERNAME": "azureuser",
+  "DB_PASSWORD": "FeedbackHub@2026!",
+  "AZURE_STORAGE_CONNECTION_STRING": "PLACEHOLDER",
+  "AZURE_COMMUNICATION_CONNECTION_STRING": "PLACEHOLDER",
+  "AZURE_COMMUNICATION_FROM_EMAIL": "DoNotReply@feedbackhub-comm-55878.azurecomm.net",
+  "ADMIN_EMAILS": "admin@feedbackhub.com",
+  "REPORT_EMAILS": "reports@feedbackhub.com",
+  "WEBSITE_TIME_ZONE": "E. South America Standard Time"
+}

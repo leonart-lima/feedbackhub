@@ -1,0 +1,11 @@
+{
+  "DB_URL": "jdbc:sqlserver://feedbackhub-server-55878.database.windows.net:1433;database=feedbackhub;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;",
+  "DB_USERNAME": "azureuser",
+  "DB_PASSWORD": "FeedbackHub@2026!",
+  "AZURE_STORAGE_CONNECTION_STRING": "DefaultEndpointsProtocol=https;EndpointSuffix=core.windows.net;AccountName=feedbackhubst1455878;AccountKey=ST/ty25cuNJ3ON610VI6EgFl5+Q4BZEUzSWatrSHG2xvzes0ZGMfUnezYB8VNa+qzNJXNbfDvQ8C+AStaP/b1A==;BlobEndpoint=https://feedbackhubst1455878.blob.core.windows.net/;FileEndpoint=https://feedbackhubst1455878.file.core.windows.net/;QueueEndpoint=https://feedbackhubst1455878.queue.core.windows.net/;TableEndpoint=https://feedbackhubst1455878.table.core.windows.net/",
+  "AZURE_COMMUNICATION_CONNECTION_STRING": "endpoint=https://feedbackhub-comm-55878.unitedstates.communication.azure.com/;accesskey=C7nAGjIV2yrUTzr3ptarTu7YBLkcmDbl4r3262ONS4dMgDdeEUuZJQQJ99CBACULyCp4YGpdAAAAAZCSqpwI",
+  "AZURE_COMMUNICATION_FROM_EMAIL": "DoNotReply@d121e4d3-ff93-4bad-b352-c5082a883eed.azurecomm.net",
+  "ADMIN_EMAILS": "admin@example.com",
+  "REPORT_EMAILS": "reports@example.com",
+  "WEBSITE_TIME_ZONE": "E. South America Standard Time"
+}

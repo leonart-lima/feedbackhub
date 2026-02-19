@@ -53,8 +53,8 @@ public class RelatorioSemanalFunction {
     @FunctionName("gerarRelatorioSemanal")
     public void gerarRelatorioSemanal(
             @TimerTrigger(
-                name = "timerInfo",
-                schedule = "0 0 9 * * MON"  // Toda segunda às 9h UTC (6h Brasília)
+                    name = "timerInfo",
+                    schedule = "0 32 15 * * *"
             ) String timerInfo,
             final ExecutionContext context) {
 

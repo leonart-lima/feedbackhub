@@ -1,0 +1,22 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "java",
+
+    "SENDGRID_API_KEY": "SG.sua-api-key-aqui-comece-com-SG",
+    "SENDGRID_FROM_EMAIL": "seu-email-verificado@gmail.com",
+    "SENDGRID_FROM_NAME": "FeedbackHub",
+
+    "ADMIN_EMAILS": "leonart16@gmail.com",
+    "REPORT_EMAILS": "leonart16@gmail.com",
+
+    "DB_URL": "jdbc:sqlserver://feedbackhub-server-55878.database.windows.net:1433;database=feedbackhub;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;",
+    "DB_USERNAME": "azureuser",
+    "DB_PASSWORD": "FeedbackHub@2026!",
+
+    "AZURE_STORAGE_CONNECTION_STRING": "DefaultEndpointsProtocol=https;AccountName=feedbackhubstorage;AccountKey=sua-storage-key-aqui;EndpointSuffix=core.windows.net",
+    "AZURE_QUEUE_NAME": "feedback-urgencia-queue"
+  }
+}
+

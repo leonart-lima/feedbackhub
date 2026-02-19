@@ -25,6 +25,11 @@
     "healthCheckWindow": "00:02:00",
     "healthCheckThreshold": 6,
     "counterThreshold": 0.80
+  },
+  "extensions": {
+    "timers": {
+      "timeZone": "E. South America Standard Time"
+    }
   }
 }
 

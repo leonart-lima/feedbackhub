@@ -74,11 +74,11 @@
             <version>12.20.0</version>
         </dependency>
 
-        <!-- Azure Communication Services Email -->
+        <!-- SendGrid Email Service -->
         <dependency>
-            <groupId>com.azure</groupId>
-            <artifactId>azure-communication-email</artifactId>
-            <version>1.0.7</version>
+            <groupId>com.sendgrid</groupId>
+            <artifactId>sendgrid-java</artifactId>
+            <version>4.10.2</version>
         </dependency>
 
 

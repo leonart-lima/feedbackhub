@@ -20,11 +20,12 @@ spring:
         dialect: org.hibernate.dialect.SQLServerDialect
         format_sql: true
 
-# Azure Communication Services
+# SendGrid Email Service
 azure:
-  communication:
-    connection-string: ${AZURE_COMMUNICATION_CONNECTION_STRING}
-    from-email: ${AZURE_COMMUNICATION_FROM_EMAIL:DoNotReply@d121e4d3-ff93-4bad-b352-c5082a883eed.azurecomm.net}
+  sendgrid:
+    api-key: ${SENDGRID_API_KEY}
+    from-email: ${SENDGRID_FROM_EMAIL:noreply@seudominio.com}
+    from-name: ${SENDGRID_FROM_NAME:FeedbackHub}
 
   storage:
     connection-string: ${AZURE_STORAGE_CONNECTION_STRING}
