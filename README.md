@@ -25,14 +25,14 @@ git push origin main  # ✨ Deploy automático!
 # 1. Login no Azure
 az login
 
-# 2. Provisionar recursos com Azure Communication Services (5-10 min)
+# 2. Provisionar recursos Azure (5-10 min)
 ./azure-setup.sh
 
 # 3. Deploy da aplicação (3-5 min)
 mvn clean package azure-functions:deploy
 ```
 
-**Serviço de E-mail**: Azure Communication Services (nativo Azure, 250 e-mails grátis/mês)
+**Serviço de E-mail**: SendGrid (100 emails/dia no plano gratuito)
 
 ---
 
@@ -67,7 +67,7 @@ mvn clean package azure-functions:deploy
 
 ## 📋 Descrição do Projeto
 
-FeedbackHub é uma plataforma de feedback serverless desenvolvida para permitir que estudantes avaliem aulas e administradores acompanhem a satisfação dos alunos em tempo real. O sistema utiliza **Azure Functions** para automação de processos, **Azure SQL Database** para armazenamento de dados, e **Azure Communication Services** para envio de e-mails.
+FeedbackHub é uma plataforma de feedback serverless desenvolvida para permitir que estudantes avaliem aulas e administradores acompanhem a satisfação dos alunos em tempo real. O sistema utiliza **Azure Functions** para automação de processos, **Azure SQL Database** para armazenamento de dados, e **SendGrid** para envio de e-mails.
 
 ### Características Principais
 
@@ -104,8 +104,8 @@ FeedbackHub é uma plataforma de feedback serverless desenvolvida para permitir 
 │           │                         │                           │
 │           │                         ▼                           │
 │           │               ┌──────────────────┐                │
-│           │               │ Azure Communic.  │                │
-│           │               │ Services (Email) │                │
+│           │               │    SendGrid      │                │
+│           │               │  (Email Service) │                │
 │           │               └──────────────────┘                │
 │           │                                                     │
 │           ▼                                                     │
@@ -142,7 +142,7 @@ FeedbackHub é uma plataforma de feedback serverless desenvolvida para permitir 
 - **Processo**:
   1. Lê mensagem da fila
   2. Gera e-mail formatado com dados da avaliação
-  3. Envia notificação via Azure Communication Services
+  3. Envia notificação via SendGrid
   4. Marca avaliação como notificada
 - **Output**: E-mail enviado aos administradores
 
@@ -291,8 +291,9 @@ az functionapp config appsettings set \
     "DB_USERNAME=azureuser" \
     "DB_PASSWORD=YourSecurePassword123!" \
     "AZURE_STORAGE_CONNECTION_STRING=$STORAGE_CONNECTION" \
-    "AZURE_COMMUNICATION_CONNECTION_STRING=your-communication-connection-string" \
-    "AZURE_COMMUNICATION_FROM_EMAIL=DoNotReply@xxxxxxxx.azurecomm.net" \
+    "SENDGRID_API_KEY=SG.sua-api-key-aqui" \
+    "SENDGRID_FROM_EMAIL=seu-email-verificado@dominio.com" \
+    "SENDGRID_FROM_NAME=FeedbackHub" \
     "ADMIN_EMAILS=admin@example.com" \
     "REPORT_EMAILS=reports@example.com"
 ```
@@ -373,12 +374,67 @@ az functionapp deployment list-publishing-profiles \
      - `DB_USERNAME`
      - `DB_PASSWORD`
      - `AZURE_STORAGE_CONNECTION_STRING`
-     - `AZURE_COMMUNICATION_CONNECTION_STRING`
-     - `AZURE_COMMUNICATION_FROM_EMAIL`
+     - `SENDGRID_API_KEY`
+     - `SENDGRID_FROM_EMAIL`
+     - `SENDGRID_FROM_NAME`
      - `ADMIN_EMAILS`
      - `REPORT_EMAILS`
 
 3. Push para branch `main` ativa o deploy automaticamente
+
+---
+
+## 📧 Configuração do SendGrid (E-mail)
+
+O projeto usa **SendGrid** para envio de e-mails. É necessário configurar uma conta antes do deploy.
+
+### 1. Criar conta no SendGrid
+
+1. Acesse: https://signup.sendgrid.com/
+2. Crie uma conta gratuita (100 emails/dia)
+3. Verifique seu e-mail
+
+### 2. Obter API Key
+
+1. Faça login em: https://app.sendgrid.com/
+2. Vá em **Settings** → **API Keys**
+3. Clique em **Create API Key**
+   - **Name**: `feedbackhub-production`
+   - **API Key Permissions**: **Full Access** (ou pelo menos "Mail Send")
+4. Copie a chave (começa com `SG.`)
+5. ⚠️ **Guarde em local seguro** - ela só aparece uma vez!
+
+### 3. Verificar e-mail remetente
+
+1. Vá em **Settings** → **Sender Authentication**
+2. Clique em **Verify a Single Sender**
+3. Preencha o formulário com seu e-mail (ex: `seu-email@gmail.com`)
+4. Verifique o e-mail que receberá
+5. ✅ Este será o e-mail usado em `SENDGRID_FROM_EMAIL`
+
+### 4. Configurar variáveis no Azure
+
+```bash
+az functionapp config appsettings set \
+  --name feedbackhub-func \
+  --resource-group feedbackhub-rg \
+  --settings \
+    "SENDGRID_API_KEY=SG.sua-chave-aqui" \
+    "SENDGRID_FROM_EMAIL=seu-email-verificado@gmail.com" \
+    "SENDGRID_FROM_NAME=FeedbackHub"
+```
+
+### 5. Testar envio de e-mail
+
+Após configurar, teste criando uma avaliação crítica (nota 0-3):
+
+```bash
+curl -X POST "https://feedbackhub-func.azurewebsites.net/api/avaliacao?code=SUA_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"descricao":"Teste de notificação","nota":2}'
+```
+
+Verifique no SendGrid: **Activity** → **Email Activity** → você verá o e-mail processado.
 
 ---
 
@@ -390,7 +446,7 @@ O monitoramento está configurado automaticamente via `host.json`:
 
 - **Logs de execução** de todas as funções
 - **Métricas de performance** (duração, taxa de sucesso)
-- **Rastreamento de dependências** (SQL, Storage, Azure Communication Services)
+- **Rastreamento de dependências** (SQL, Storage, SendGrid)
 - **Alertas personalizados**
 
 ---
@@ -447,13 +503,15 @@ Cria uma nova avaliação
 | **[docs/AZURE_COMMANDS.md](docs/AZURE_COMMANDS.md)** | 🔧 Comandos úteis do Azure CLI |
 | **[docs/FUNCTIONS.md](docs/FUNCTIONS.md)** | 📋 Documentação das Azure Functions |
 | **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** | 🔍 Solução de problemas |
+| **[TROUBLESHOOTING-404.md](TROUBLESHOOTING-404.md)** | 🚨 Resolver erro 404 na API |
 
 ### 📜 Scripts Automatizados
 
 | Script | Descrição |
 |--------|-----------|
-| `azure-setup.sh` | Cria todos os recursos na Azure com Azure Communication Services |
+| `azure-setup.sh` | Cria todos os recursos na Azure |
 | `build.sh` | Build alternativo do projeto |
+| `fix-404-error.sh` | Diagnostica e corrige erro 404 na API |
 
 ### Tecnologias Utilizadas
 
@@ -464,7 +522,7 @@ Cria uma nova avaliação
 | Azure Functions | 4.x | Serverless computing |
 | Azure SQL Database | Serverless | Banco de dados relacional |
 | Azure Storage Queue | - | Fila de mensagens |
-| Azure Communication Services | 1.0.7 | Serviço de e-mail |
+| SendGrid | 4.10.2 | Serviço de e-mail |
 | Application Insights | - | Monitoramento e logs |
 
 ---
